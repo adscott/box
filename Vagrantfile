@@ -42,7 +42,9 @@ Vagrant.configure("2") do |config|
     config.vm.box = "centos/7"
     config.ssh.forward_agent = true
 
-    config.vm.provision "shell", inline: "yum install -y libevent ncurses libevent-devel ncurses-devel gcc make bison pkg-config git python3 python3-devel"
+    config.vm.provision "shell", inline: "yum install -y epel-release"
+    config.vm.provision "shell", inline: "yum update -y"
+    config.vm.provision "shell", inline: "yum install -y libevent ncurses libevent-devel ncurses-devel gcc make bison pkg-config git python3 python3-devel htop"
     config.vm.provision "shell", inline: install_tmux("2.8")
     config.vm.provision "shell", inline: install_vim()
     config.vm.provision "shell", inline: install_dotfiles(), privileged: false
