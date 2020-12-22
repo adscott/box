@@ -40,7 +40,16 @@ end
 
 Vagrant.configure("2") do |config|
     config.vm.box = "centos/7"
+    config.vm.hostname = "sandbox"
+    config.vm.network "public_network", bridge: "public_network"
+
     config.ssh.forward_agent = true
+
+    config.vm.provider "hyperv" do |h|
+        h.cpus = 12
+        h.memory = 8192
+        h.linked_clone = true
+    end
 
     config.vm.provision "shell", inline: "yum install -y epel-release"
     config.vm.provision "shell", inline: "yum update -y"
@@ -49,5 +58,11 @@ Vagrant.configure("2") do |config|
     config.vm.provision "shell", inline: install_vim()
     config.vm.provision "shell", inline: install_dotfiles(), privileged: false
     config.vm.provision "file", source: "~/.ssh/id_rsa", destination: "/home/vagrant/.ssh/id_rsa"
+    config.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "/home/vagrant/.ssh/id_rsa.pub"
     config.vm.provision "shell", inline: "chmod 600 /home/vagrant/.ssh/id_rsa", privileged: false
+
+    config.vm.provision "shell", path: "./scripts/install-docker.sh"
+
+    config.vm.provision "shell", path: "./scripts/configure-static-ip.sh"
+    config.vm.provision :reload
 end
